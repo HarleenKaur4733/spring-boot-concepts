@@ -1,0 +1,49 @@
+## Pending: Unit test concept here
+
+BTS:
+1. Application starts.
+2. Spring IOC starts.
+3. Creates beans (eager) -> constructor will run
+4. Inject dependencies
+5. @PostConstrcut
+6. Use that bean (like ivoking some methods of bean)
+7. @PreDestroy
+8. Bean Destroyed
+
+Q1: How objects are manipulated internally without using new keyword: 
+Frameworks like Spring, Hibernate, and JUnit use reflection to do “magic” — for example:
+Create objects without using new explicitly.
+Inject dependencies into private fields (like @Autowired).
+Call methods dynamically (like @Test methods in JUnit).
+
+Q2: Cycle dependency: A circular dependency happens when two or more beans depend on each other, 
+forming a loop.
+Q3: Unsatisfed dependency: An UnsatisfiedDependencyException occurs when Spring cannot find 
+or decide on a suitable bean to inject into a dependency.
+
+
+
+*****My understaning of FI******
+Dekho ho kya rha hai => spring ne sbse phle constructor call kiya and fr uske baad uski field dependencies
+resolve ki using reflection. 
+
+Iska disadvantage kya hai => ab suppose maine field ko immutable bna dia, mtlb final keyword lga dia.
+Ab final keyword kaise kaam krta, uska hota ki a final field must be assigned exactly once, and it must be assigned before
+the constructor finishes. Ab field mein values toh constructor call hone k baad e set hogi, toh ab woh error dega. 
+Kyon ki woh final value ab koi bhi value inject nhi kr payegi.
+
+Second disadvantage NPE:
+Phle constructor call hoga and it wants to run method of unresolved dependency.
+-----------------------------------------------------------------------------------------
+@Component
+public class OrderService {
+
+    @Autowired
+    private PaymentService paymentService;
+
+    public OrderService() {
+        // ❌ paymentService is still null here
+        paymentService.makePayment(); // causes NullPointerException
+    }
+}
+-------------------------------------------------------------------------------------------
